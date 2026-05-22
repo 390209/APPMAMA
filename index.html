@@ -254,7 +254,7 @@
             </div>
         </div>
         <div class="news-ticker">
-            <div id="go2rtc-version">4.5</div>
+            <div id="go2rtc-version">4.6</div>
             <div id="noticias-scroll">...</div>
         </div>
     </div>
@@ -373,9 +373,12 @@
         triviaMostradaTimer = setTimeout(() => {
             const letra = (q.respuesta || '').trim().toUpperCase().charAt(0);
             const mapa = { 'A': opcA, 'B': opcB, 'C': opcC };
-            const el = mapa[letra];
-            if (el) { el.style.background = '#5CB85C'; el.style.color = '#fff'; el.style.borderColor = '#5CB85C'; }
-            if (respDiv) respDiv.style.display = 'block';
+            const elCorrecto = mapa[letra];
+            const textoRespuesta = elCorrecto ? elCorrecto.textContent : q.respuesta;
+            const columna = caja.querySelector('[data-opc="A"]')?.parentElement;
+            if (columna) {
+                columna.innerHTML = `<div style="font-size:2.2rem;font-weight:700;color:#5CB85C;line-height:1.3;">✓ ${textoRespuesta}</div>`;
+            }
             triviaMostradaTimer = setTimeout(() => { triviaIdx++; mostrarTrivia(); }, 20000);
         }, 15000);
     }
