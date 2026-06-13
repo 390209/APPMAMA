@@ -264,7 +264,11 @@
     // ── CONFIGURACIÓN ─────────────────────────────────────────────────────────
     // Si la tablet está en otra red (casa de mamá), usar la IP de Tailscale
     // de la PC servidor. Si está en la misma red, usar 192.168.1.26
-    const GO2RTC = 'http://localhost:1984';
+    // FIX: usar window.location.origin para que funcione tanto desde localhost
+    // como desde la tablet via Tailscale (http://100.115.172.8:1984/).
+    // Antes era 'http://localhost:1984' y el WebSocket fallaba en la tablet
+    // porque localhost apuntaba a la tablet misma, no a la PC con go2rtc.
+    const GO2RTC = window.location.origin;
 
     const AGENDA_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR7-WKumAlyEyQXUD9I-5qhxn0vBbI6M238FwuhctONAQfcsmKhwAIfO5gLbnZhiild3nqmRR-2n9mo/pub?output=csv&gid=1979695949';
     const FRASES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQsVTl_DwnvHg14G_rV5iUFOHal3B4w3llcCZsZwTNMh7uvx8YXdctdWXX2nbRVRpxizkZPKb665nKo/pub?output=csv';
