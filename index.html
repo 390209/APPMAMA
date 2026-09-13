@@ -256,7 +256,7 @@
             </div>
         </div>
         <div class="news-ticker">
-            <div id="go2rtc-version">4.7</div>
+            <div id="go2rtc-version">4.8</div>
             <div id="noticias-scroll">...</div>
         </div>
     </div>
@@ -396,25 +396,25 @@
 
     const MSG_DESCANSO = 'Descansamos  ✨  Si nos despertamos, respiramos profundo 3 veces, inhalando y exhalando profundo.  Nos relajamos.  Y dormimos.  🌙  ';
 
-    function actualizarTicker() {
+        function actualizarTicker() {
         const h = new Date().getHours();
         const scroll = document.getElementById('noticias-scroll');
-        if (h >= 20) {
-            scroll.textContent = MSG_DESCANSO;
-            scroll.style.color = '#E91E8C';
-            scroll.style.animationDuration = '212s';
-            scroll.style.fontFamily = "'Caveat', cursive";
-            scroll.style.fontSize = '5.7rem';
-        } else {
-            scroll.style.color = '';
-            scroll.style.animationDuration = '700s';
-            scroll.style.fontFamily = "'Caveat', cursive";
-            scroll.style.fontSize = '';
+        const ticker = document.querySelector('.news-ticker');
+        const esNoche = (h >= 22 || h < 6);
+        if (esNoche) {
+            if (ticker) ticker.style.display = 'none';
+            scroll.textContent = '';
+            return;
         }
+        if (ticker) ticker.style.display = '';
+        scroll.style.color = '';
+        scroll.style.animationDuration = '700s';
+        scroll.style.fontFamily = "'Caveat', cursive";
+        scroll.style.fontSize = '';
     }
 
     function cargarLetrasEnTicker() {
-        if (new Date().getHours() >= 20) { actualizarTicker(); return; }
+        const hn = new Date().getHours(); if (hn >= 22 || hn < 6) { actualizarTicker(); return; }
         const texto = LETRAS.map(l => `${l.autor}  —  ${l.titulo}  ·  ${l.texto.replace(/\n/g, '  ')}`).join('     ✦     ');
         const scroll = document.getElementById('noticias-scroll');
         scroll.textContent = texto + '     ✦     ';
@@ -465,12 +465,13 @@
         const msg = document.getElementById('msg-arriba');
         msg.style.opacity = 0;
 
-        if (h >= 22) {
+                // Noche 22:00-06:00: una sola frase (sin ticker abajo)
+        if (h >= 22 || h < 6) {
             setTimeout(() => {
-                msg.innerHTML = 'Es de noche, hablamos despacito para no molestar a los vecinos 🌙';
+                msg.innerHTML = 'Es de noche, hablamos despacio por los vecinos, y dormimosssssssss';
                 msg.style.color = '#F5EFE0';
-                msg.style.fontSize = '3.6rem';
-                msg.style.lineHeight = '1.25';
+                msg.style.fontSize = '3.2rem';
+                msg.style.lineHeight = '1.3';
                 msg.style.fontWeight = '500';
                 msg.style.letterSpacing = '0.02em';
                 msg.style.fontFamily = 'Arial, Helvetica, sans-serif';
