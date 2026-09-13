@@ -54,7 +54,7 @@
 ║ SERVICIOS EXTERNOS (no necesitan configuración, funcionan solos)             ║
 ║ · Clima:    api.open-meteo.com — Buenos Aires                                ║
 ║ · Noticias: La Nación RSS (fallback: Clarín)                                 ║
-║ · Fotos de fondo: Bing Daily Wallpaper (paisajes del mundo con nombre lugar) ║
+║ · Fotos: de día Bing; de noche lista curada Unsplash (cielos calmados, sin animales) ║
 ║                                                                              ║
 ║ GOOGLE SHEETS — para editar ir a drive.google.com y buscar por nombre        ║
 ║                                                                              ║
@@ -210,6 +210,8 @@
             transition: background 2s ease, background-color 2s ease, color 2s ease, border-color 2s ease;
         }
         body.modo-noche { --bg: #1E1510; --card: #2A1F14; --dim: #8B7355; --border: #3D2B1F; --text: #F0E6D3; }
+        body.modo-noche .layer { filter: brightness(0.72) saturate(0.75) contrast(0.95); }
+        body.modo-noche #paisaje-label { opacity: 0.85; }
         #clima-icon img { width: 3.5rem; height: 3.5rem; vertical-align: middle; }
     </style>
 </head>
@@ -563,21 +565,36 @@
         } catch (_) {}
     }
 
-    let animalIdx = 0;
+    // Fotos de noche: lista curada (cielos/paisajes calmados). Nada random de animales.
+    const FOTOS_NOCHE = [
+        { url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=70&auto=format&fit=crop', lugar: 'Cielo estrellado' },
+        { url: 'https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=1200&q=70&auto=format&fit=crop', lugar: 'Lago de noche' },
+        { url: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?w=1200&q=70&auto=format&fit=crop', lugar: 'Vía Láctea' },
+        { url: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=1200&q=70&auto=format&fit=crop', lugar: 'Luna' },
+        { url: 'https://images.unsplash.com/photo-1444703686981-aaf876c07e42?w=1200&q=70&auto=format&fit=crop', lugar: 'Noche serena' },
+        { url: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d19?w=1200&q=70&auto=format&fit=crop', lugar: 'Aurora suave' },
+        { url: 'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?w=1200&q=70&auto=format&fit=crop', lugar: 'Estrellas' },
+        { url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=70&auto=format&fit=crop', lugar: 'Montañas de noche' },
+    ];
+    let nocheIdx = 0;
     function actualizarPaisaje() {
         const c1 = document.getElementById('capa1'), c2 = document.getElementById('capa2');
         const t = alternar ? c2 : c1, o = alternar ? c1 : c2;
         const h = new Date().getHours();
+        const esNoche = (h >= 20 || h < 8);
 
         let url, lugar = 'Foto del día';
-        if (h >= 20) {
-            url = `https://loremflickr.com/1200/800/cat,sleeping?random=${++animalIdx}`;
-            lugar = 'Gatitos durmiendo 🐱';
+        if (esNoche) {
+            const foto = FOTOS_NOCHE[nocheIdx % FOTOS_NOCHE.length];
+            url = foto.url;
+            lugar = foto.lugar;
+            nocheIdx++;
         } else if (bingImagenes.length) {
             const bi = bingImagenes[bingIdx % bingImagenes.length];
             url = bi.url; lugar = bi.lugar || 'Foto del día'; bingIdx++;
         } else {
             url = `https://loremflickr.com/1000/800/mountain,forest,lake?random=${Date.now()}`;
+            lugar = 'Paisaje';
         }
 
         const lbl = document.getElementById('paisaje-label');
@@ -591,7 +608,6 @@
             t.classList.add('active'); o.classList.remove('active'); alternar = !alternar;
         };
     }
-
     // ── FERIADOS ─────────────────────────────────────────────────────────────
     async function verificarFeriado() {
         try {
